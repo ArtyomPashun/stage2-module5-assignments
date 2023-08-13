@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
+import java.lang.StringBuilder;
 
 import assignments.annotations.FullNameProcessorGeneratorAnnotation;
 import assignments.annotations.ListIteratorAnnotation;
@@ -39,6 +41,7 @@ public class LocalProcessor {
     @ListIteratorAnnotation
     public void listIterator(LinkedList<String> stringList) {
         stringList.stream()
+                .filter(Objects::nonNull)
                 .map(String::hashCode)
                 .forEach(System.out::println);
     }
