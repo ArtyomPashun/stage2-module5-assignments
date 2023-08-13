@@ -20,7 +20,8 @@ public class LocalProcessor {
     protected String processorVersion;
     private Integer valueOfCheap;
     private Scanner informationScanner;
-    private static List<String> stringArrayList = new LinkedList<>();
+    private List<String> stringArrayList;
+    private StringBuilder stringBuilder;
 
     public LocalProcessor(String processorName, Long period, String processorVersion, Integer valueOfCheap,
                           Scanner informationScanner, LinkedList<String> stringArrayList) {
@@ -37,28 +38,30 @@ public class LocalProcessor {
 
     @ListIteratorAnnotation
     public void listIterator(LinkedList<String> stringList) {
-        stringArrayList = new LinkedList<>(stringList);
-        for (int i = 0; i < period; i++) {
-            System.out.println(stringArrayList.get(i).hashCode());
-        }
+        stringList.stream()
+                .map(String::hashCode)
+                .forEach(System.out::println);
     }
 
     @FullNameProcessorGeneratorAnnotation
     public String fullNameProcessorGenerator(LinkedList<String> stringList) {
-        StringBuilder temp = new StringBuilder();
-        for (int i = 0; i < stringArrayList.size(); i++) {
-            temp.append(stringList.get(i)).append(' ');
+        stringBuilder = new StringBuilder();
+        for (String str : stringList) {
+            stringBuilder.append(str).append(' ');
         }
-        processorName = temp.toString();
+        processorName = stringBuilder.toString();
         return processorName;
     }
 
     @ReadFullProcessorNameAnnotation
     public void readFullProcessorName(File file) throws FileNotFoundException {
-        informationScanner = new Scanner(file);
-        while (informationScanner.hasNext()) {
-            processorVersion += informationScanner.nextLine();
+        try (Scanner scanner = new Scanner(file)) {
+            this.informationScanner = scanner;
+            stringBuilder = new StringBuilder(processorVersion);
+            while (scanner.hasNext()) {
+                stringBuilder.append(scanner.nextLine());
+            }
+            processorVersion = stringBuilder.toString();
         }
-        informationScanner.close();
     }
 }
